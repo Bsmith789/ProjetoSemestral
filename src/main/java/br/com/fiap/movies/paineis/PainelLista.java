@@ -36,14 +36,14 @@ public class PainelLista extends JPanel {
 
         carregarDados();
 
-        add(new JScrollPane(tabela));
+        add(new JScrollPane(tabela), BorderLayout.CENTER);
 
         JPanel botoes = new JPanel();
         botoes.add(atualizar);
         botoes.add(carregar);
         botoes.add(apagar);
 
-        add(botoes, BorderLayout.SOUTH);
+        add(botoes, BorderLayout.AFTER_LINE_ENDS);
 
         atualizar.addActionListener(this::actionPerformed);
         carregar.addActionListener(this::actionPerformed);
@@ -57,6 +57,7 @@ public class PainelLista extends JPanel {
         modelo.setNumRows(0);
 
         FilmeDAO dao = new FilmeDAO();
+
         List<Filme> listaFilmes = dao.buscarTodos();
 
         for (Filme filme : listaFilmes) {
@@ -70,6 +71,7 @@ public class PainelLista extends JPanel {
                     String.valueOf(filme.getAvaliacao())
             };
             modelo.addRow(linha);
+            dao.persist(filme);
         }
     }
 
@@ -93,6 +95,7 @@ public class PainelLista extends JPanel {
         int resposta = JOptionPane.showConfirmDialog(this,"Tem certeza que quer alterar o filme selecionado ?");
         if(resposta == JOptionPane.YES_OPTION){
             dao.atualizar(filme);
+            dao.persist(filme);
             carregarDados();
         }
     }

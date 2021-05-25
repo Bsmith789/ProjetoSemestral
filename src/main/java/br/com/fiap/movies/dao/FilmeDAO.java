@@ -34,6 +34,12 @@ public class FilmeDAO {
         manager.getTransaction().commit();
     }
 
+    public void persist(Filme filme){
+        manager.getTransaction().begin();
+        manager.persist(filme);
+        manager.getTransaction().commit();
+    }
+
     public void atualizar(Filme filme){
         manager.getTransaction().begin();
         manager.merge(filme);
