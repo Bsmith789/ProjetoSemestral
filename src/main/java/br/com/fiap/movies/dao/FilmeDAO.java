@@ -34,10 +34,24 @@ public class FilmeDAO {
         manager.getTransaction().commit();
     }
 
-    public void persist(Filme filme){
+    public void salvar(Filme filme){
+        Filme filmeAtualiza = buscarPorId(filme.getId());
         manager.getTransaction().begin();
-        manager.persist(filme);
+        filmeAtualiza.setTitulo(filme.getTitulo());
+        filmeAtualiza.setSinopse(filme.getSinopse());
+        filmeAtualiza.setGenero(filme.getGenero());
+        filmeAtualiza.setOndeAssistir(filme.getOndeAssistir());
+        filmeAtualiza.setAssistido(filme.isAssistido());
+        filmeAtualiza.setAvaliacao(filme.getAvaliacao());
         manager.getTransaction().commit();
+    }
+
+    public Filme salvarPorId(Long id){
+        return manager.find(Filme.class,id);
+    }
+
+    public void salvar(Long id){
+        salvar(salvarPorId(id));
     }
 
     public void atualizar(Filme filme){
@@ -67,4 +81,5 @@ public class FilmeDAO {
         listaFilmes.add(new Filme("Viuva Negra", "Uma mulher da pesada", "Ação", "Netflix", true, 4));
     return listaFilmes;
     }
+
 }

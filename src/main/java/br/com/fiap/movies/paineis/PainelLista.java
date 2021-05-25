@@ -14,8 +14,10 @@ public class PainelLista extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
+    private PainelCadastro painelCadastro = new PainelCadastro();
     private JLabel lista = new JLabel("Lista de Filmes");
     private JButton atualizar = new JButton("Atualizar");
+    private JButton salvar = new JButton("Salvar");
     private JButton carregar = new JButton("Carregar");
     private JButton apagar = new JButton("Apagar");
     private DefaultTableModel modelo = new DefaultTableModel();
@@ -39,12 +41,14 @@ public class PainelLista extends JPanel {
         add(new JScrollPane(tabela), BorderLayout.CENTER);
 
         JPanel botoes = new JPanel();
+        botoes.add(salvar);
         botoes.add(atualizar);
         botoes.add(carregar);
         botoes.add(apagar);
 
         add(botoes, BorderLayout.AFTER_LINE_ENDS);
 
+        salvar.addActionListener(this::actionPerformed);
         atualizar.addActionListener(this::actionPerformed);
         carregar.addActionListener(this::actionPerformed);
         apagar.addActionListener(this::actionPerformed);
@@ -71,7 +75,19 @@ public class PainelLista extends JPanel {
                     String.valueOf(filme.getAvaliacao())
             };
             modelo.addRow(linha);
-            dao.persist(filme);
+            dao.salvar(filme);
+        }
+    }
+
+    private void salvar(){
+        FilmeDAO dao = new FilmeDAO();
+        int linha = tabela.getSelectedRow();
+        String id = tabela.getValueAt(linha,0).toString();
+        Filme filme = dao.salvarPorId(Long.valueOf(id));
+        int resposta = JOptionPane.showConfirmDialog(this,"Tem certeza que quer salvar esse filme?");
+        if(resposta == JOptionPane.YES_OPTION){
+            dao.salvar(filme);
+            carregarDados();
         }
     }
 
@@ -94,9 +110,12 @@ public class PainelLista extends JPanel {
         Filme filme = dao.atualizaPorId(Long.valueOf(id));
         int resposta = JOptionPane.showConfirmDialog(this,"Tem certeza que quer alterar o filme selecionado ?");
         if(resposta == JOptionPane.YES_OPTION){
-            dao.atualizar(filme);
-            dao.persist(filme);
-            carregarDados();
+            painelCadastro.getCampos().getTitulo().setText(filme.getTitulo());
+            painelCadastro.getCampos().getSinopse().setText(filme.getSinopse());
+            painelCadastro.getCampos().getGenero().setToolTipText(filme.getGenero());
+            painelCadastro.getComponentes().getOndeAssistir().setToolTipText(filme.getOndeAssistir());
+            painelCadastro.getComponentes().getAssistido().setText(String.valueOf(filme.isAssistido()));
+            painelCadastro.getComponentes().getAvaliacao().setRating(filme.getAvaliacao());
         }
     }
 
@@ -104,6 +123,7 @@ public class PainelLista extends JPanel {
         if (e.getSource() == carregar) carregarDados();
         if (e.getSource() == apagar) apagar();
         if (e.getSource() == atualizar) atualizar();
+        if(e.getSource() == salvar) salvar();
     }
 
 
